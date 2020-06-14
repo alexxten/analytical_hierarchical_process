@@ -1,0 +1,22 @@
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    
+{% load static %}
+<link rel="stylesheet" href={% static 'style.css' %} type="text/css">
+
+{% block head%}
+    <title>Start analysis page</title>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1>Старт анализа</h1>
+        <!-- {{ criterions }} -->
+        <!-- {{ alternatives }} -->
+        <form method="post"> 
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Старт</button>
+        </form> 
+    </div>
+{% endblock %}
+
+

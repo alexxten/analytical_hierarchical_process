@@ -1,0 +1,26 @@
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    
+{% load static %}
+<link rel="stylesheet" href={% static 'style.css' %} type="text/css">
+
+{% block head%}
+    <title>Home page</title>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1>Welcome home</h1>
+        <br>
+        <p>Проект по СППР. Метод анализа иерархий. Тыкни кнопу чтобы начать</p>
+        <form method="post"> 
+            {% csrf_token %}
+            <p>Введите количество критериев</p>
+            <input type="text" value="" name="criterions">
+            <p>Введите количество альтернатив</p>
+            <input type="text" value="" name="alternatives">
+            <input type="submit" value="Начать" class="btn btn-success">
+        </form> 
+    </div>
+{% endblock %}
+
+
