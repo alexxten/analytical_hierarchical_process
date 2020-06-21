@@ -35,14 +35,14 @@ def start_analysis(request, id):
                 aname=request.POST.get(f'a_{i}')
             )
             r.save()
-        return redirect(analysis_info, id=r.pk)
+        return redirect(analysis_info, id=id)
     else:
         context = {'criterions': cnum_list, 'alternatives': anum_list}
         return render(request, 'start_analysis_page.html', context)
 
 def analysis_info(request, id):
-    cnames = models.CriterionsNames.objects.raw(f'SELECT * from ahp_criterionsnames where fk_id=id')
-    anames = models.AlternativesNames.objects.raw(f'SELECT * from ahp_alternativesnames where fk_id=id')
+    cnames = models.CriterionsNames.objects.raw(f'SELECT * from ahp_criterionsnames where fk_id={id}')
+    anames = models.AlternativesNames.objects.raw(f'SELECT * from ahp_alternativesnames where fk_id={id}')
 
     if request.method == 'POST':
         pass
