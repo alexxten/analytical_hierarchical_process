@@ -6,9 +6,9 @@ class CriterionsAlternativesAmount(models.Model):
     alternatives = models.IntegerField()
 
 class CriterionsNames(models.Model):
-    id = models.IntegerField(primary_key=True)
+    fk_id = models.IntegerField()
     cname = models.TextField()
 
 class AlternativesNames(models.Model):
-    id = models.IntegerField(primary_key=True)
+    fk_id = models.IntegerField()
     aname = models.TextField()

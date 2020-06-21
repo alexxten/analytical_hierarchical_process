@@ -25,18 +25,27 @@ def start_analysis(request, id):
     if request.method == 'POST':
         for i in cnum_list:
             r = models.CriterionsNames(
-                id=id,
+                fk_id=id,
                 cname=request.POST.get(f'c_{i}')
             )
             r.save()
         for i in anum_list:
             r = models.AlternativesNames(
-                id=id,
+                fk_id=id,
                 aname=request.POST.get(f'a_{i}')
             )
             r.save()
-        return HttpResponse(f'POST, {request.POST.get("c_1")}')
-
+        return redirect(analysis_info, id=r.pk)
     else:
         context = {'criterions': cnum_list, 'alternatives': anum_list}
         return render(request, 'start_analysis_page.html', context)
+
+def analysis_info(request, id):
+    cnames = models.CriterionsNames.objects.raw(f'SELECT * from ahp_criterionsnames where fk_id=id')
+    anames = models.AlternativesNames.objects.raw(f'SELECT * from ahp_alternativesnames where fk_id=id')
+
+    if request.method == 'POST':
+        pass
+    else:
+        context = {'criterions': cnames, 'alternatives': anames}
+        return render(request, 'analysis_info_page.html', context)
