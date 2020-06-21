@@ -1,0 +1,35 @@
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    
+{% load static %}
+<link rel="stylesheet" href={% static 'style.css' %} type="text/css">
+
+{% block head %}
+    <title>Alternatives info</title>
+{% endblock head %}
+
+{% block body %}
+    <div class="container">
+        <h1>Ввод информации о значениях критериев по альтернативам</h1>
+        <br>
+        <form method="post">
+            <table>
+                <tr>
+                    <th>Альтернатива/Критерий</th>
+                    {% for c in criterions %}
+                        <th>{{ c.cname }}</th>
+                    {% endfor %}
+                </tr>
+                {% for a in alternatives %}
+                    <tr>
+                        <td>{{ a.aname }}</td>
+                        {% for c in criterions %}
+                            <td><input type="text" class="table-input" name="{{ a.id }}_{{ c.id }}"/></td>
+                        {% endfor %} 
+                    </tr> 
+                {% endfor %}
+            </table>
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Отправить</button>
+        </form>
+    </div>
+{% endblock body %}
