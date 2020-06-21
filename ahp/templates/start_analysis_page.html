@@ -10,37 +10,38 @@
 {% block body %}
     <div class="container">
         <h1>Старт анализа</h1>
-        <p>Введите критерии:</p>
-        <br>
-        <table>
-            <tr>
-                <th>Критерий</th>
-                <th>Название</th>
-            </tr>
-            {% for i in criterions %}
-                <tr>
-                    <td>{{ i }}</td>
-                    <td><input type="text" class="table-input"/></td>
-                </tr>
-            {% endfor %}
-        </table>
-        
-        <p>Введите альтернативы:</p>
-        <br>
-        <table>
-            <tr>
-                <th>Альтернатива</th>
-                <th>Название</th>
-            </tr>
-            {% for i in alternatives %}
-                <tr>
-                    <td>{{ i }}</td>
-                    <td><input type="text" class="table-input"/></td>
-                </tr>
-            {% endfor %}
-        </table>
-
         <form method="post"> 
+            <p>Введите критерии:</p>
+            <br>
+            <table>
+                <tr>
+                    <th>Критерий</th>
+                    <th>Название</th>
+                </tr>
+                {% for i in criterions %}
+                    <tr>
+                        <td>{{ i }}</td>
+                        <td><input type="text" class="table-input" name="c_{{ i }}"/></td>
+                    </tr>
+                {% endfor %}
+            </table>
+            
+            <p>Введите альтернативы:</p>
+            <br>
+            <table>
+                <tr>
+                    <th>Альтернатива</th>
+                    <th>Название</th>
+                </tr>
+                {% for i in alternatives %}
+                    <tr>
+                        <td>{{ i }}</td>
+                        <td><input type="text" class="table-input" name="a_{{ i }}"/></td>
+                    </tr>
+                {% endfor %}
+            </table>
+
+            
             {% csrf_token %}
             <button type="submit" class="btn btn-primary">Старт</button>
         </form> 

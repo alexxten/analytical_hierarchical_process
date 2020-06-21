@@ -18,12 +18,25 @@ def home(request):
         return render(request, 'home_page.html')
 
 def start_analysis(request, id):
-    if request.method == 'POST':
-        return HttpResponse('POST')
-    else:
-        record = models.CriterionsAlternativesAmount.objects.get(pk=id)
-        context = {}
-        context['criterions'] = [x for x in range(1, record.criterions+1)]
-        context['alternatives'] = [x for x in range(1, record.alternatives+1)]
+    record = models.CriterionsAlternativesAmount.objects.get(pk=id)
+    cnum_list = [x for x in range(1, record.criterions+1)]
+    anum_list = [x for x in range(1, record.alternatives+1)]
 
+    if request.method == 'POST':
+        for i in cnum_list:
+            r = models.CriterionsNames(
+                id=id,
+                cname=request.POST.get(f'c_{i}')
+            )
+            r.save()
+        for i in anum_list:
+            r = models.AlternativesNames(
+                id=id,
+                aname=request.POST.get(f'a_{i}')
+            )
+            r.save()
+        return HttpResponse(f'POST, {request.POST.get("c_1")}')
+
+    else:
+        context = {'criterions': cnum_list, 'alternatives': anum_list}
         return render(request, 'start_analysis_page.html', context)
