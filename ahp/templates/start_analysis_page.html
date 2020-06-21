@@ -3,20 +3,48 @@
 {% load static %}
 <link rel="stylesheet" href={% static 'style.css' %} type="text/css">
 
-{% block head%}
+{% block head %}
     <title>Start analysis page</title>
-{% endblock %}
+{% endblock head %}
 
 {% block body %}
     <div class="container">
         <h1>Старт анализа</h1>
-        {{ criterions }}
-        {{ alternatives }}
+        <p>Введите критерии:</p>
+        <br>
+        <table>
+            <tr>
+                <th>Критерий</th>
+                <th>Название</th>
+            </tr>
+            {% for i in criterions %}
+                <tr>
+                    <td>{{ i }}</td>
+                    <td><input type="text" class="table-input"/></td>
+                </tr>
+            {% endfor %}
+        </table>
+        
+        <p>Введите альтернативы:</p>
+        <br>
+        <table>
+            <tr>
+                <th>Альтернатива</th>
+                <th>Название</th>
+            </tr>
+            {% for i in alternatives %}
+                <tr>
+                    <td>{{ i }}</td>
+                    <td><input type="text" class="table-input"/></td>
+                </tr>
+            {% endfor %}
+        </table>
+
         <form method="post"> 
             {% csrf_token %}
             <button type="submit" class="btn btn-primary">Старт</button>
         </form> 
     </div>
-{% endblock %}
+{% endblock body %}
 
 

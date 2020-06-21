@@ -23,8 +23,7 @@ def start_analysis(request, id):
     else:
         record = models.CriterionsAlternativesAmount.objects.get(pk=id)
         context = {}
-        # context['criterions'] = record
-        context['criterions'] = record.criterions
-        context['alternatives'] = record.alternatives
+        context['criterions'] = [x for x in range(1, record.criterions+1)]
+        context['alternatives'] = [x for x in range(1, record.alternatives+1)]
 
         return render(request, 'start_analysis_page.html', context)
