@@ -10,8 +10,8 @@
 {% block body %}
     <div class="container">
         <h1>Старт анализа</h1>
-        <!-- {{ criterions }} -->
-        <!-- {{ alternatives }} -->
+        {{ criterions }}
+        {{ alternatives }}
         <form method="post"> 
             {% csrf_token %}
             <button type="submit" class="btn btn-primary">Старт</button>

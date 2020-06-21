@@ -21,5 +21,10 @@ def start_analysis(request, id):
     if request.method == 'POST':
         return HttpResponse('POST')
     else:
-        return HttpResponse(f'GET, {id}', status=200)
-        # return render(request, 'start_analysis_page.html')
+        record = models.CriterionsAlternativesAmount.objects.get(pk=id)
+        context = {}
+        # context['criterions'] = record
+        context['criterions'] = record.criterions
+        context['alternatives'] = record.alternatives
+
+        return render(request, 'start_analysis_page.html', context)
