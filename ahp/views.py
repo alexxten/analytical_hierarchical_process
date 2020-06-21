@@ -45,7 +45,28 @@ def analysis_info(request, id):
     anames = models.AlternativesNames.objects.raw(f'SELECT * from ahp_alternativesnames where fk_id={id}')
 
     if request.method == 'POST':
-        pass
+        for a in anames:
+            for c in cnames:
+                r = models.AlternativesCriterionsInfo(
+                    fk_id = id,
+                    c_id = c.id,
+                    a_id = a.id,
+                    value = request.POST.get(f'{a.id}_{c.id}'),
+                )
+                r.save()
+        return redirect(criterions_comparison, id=id)
     else:
         context = {'criterions': cnames, 'alternatives': anames}
         return render(request, 'analysis_info_page.html', context)
+
+
+def criterions_comparison(request, id):
+    cnames = models.CriterionsNames.objects.raw(f'SELECT * from ahp_criterionsnames where fk_id={id}')
+    if request.method == 'POST':
+        pass
+    else:
+        context = {'criterions': cnames}
+        return render(request, 'criterions_comparison_page.html', context)
+
+def alternatives_comparison(request):
+    pass

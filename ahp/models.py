@@ -12,3 +12,9 @@ class CriterionsNames(models.Model):
 class AlternativesNames(models.Model):
     fk_id = models.IntegerField()
     aname = models.TextField()
+
+class AlternativesCriterionsInfo(models.Model):
+    fk_id = models.IntegerField()
+    c_id = models.IntegerField()
+    a_id = models.IntegerField()
+    value = models.FloatField()

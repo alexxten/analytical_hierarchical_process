@@ -9,27 +9,28 @@
 
 {% block body %}
     <div class="container">
-        <h1>Ввод информации о значениях критериев по альтернативам</h1>
+        <h1>Сравнение критериев</h1>
         <br>
         <form method="post">
             <table>
                 <tr>
-                    <th>Альтернатива/Критерий</th>
+                    <th>Критерии</th>
                     {% for c in criterions %}
                         <th>{{ c.cname }}</th>
                     {% endfor %}
                 </tr>
-                {% for a in alternatives %}
+                {% for cr in criterions %}
                     <tr>
-                        <td>{{ a.aname }}</td>
-                        {% for c in criterions %}
-                            <td><input type="text" class="table-input" name="{{ a.id }}_{{ c.id }}"/></td>
-                        {% endfor %} 
-                    </tr> 
+                        <td>{{ cr.cname }}</td>
+                        {% for cd in criterions %}
+                            <td><input type="text" class="table-input" name="name"/></td>
+                        {% endfor %}
+                    </tr>
                 {% endfor %}
             </table>
+            <br>
             {% csrf_token %}
             <button type="submit" class="btn btn-primary">Отправить</button>
         </form>
     </div>
-{% endblock body %}
+    {% endblock body %}
