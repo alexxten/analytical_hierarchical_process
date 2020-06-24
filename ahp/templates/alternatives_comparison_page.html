@@ -4,29 +4,29 @@
 <link rel="stylesheet" href={% static 'style.css' %} type="text/css">
 
 {% block head %}
-    <title>Criterions comparison</title>
+    <title>Alternatives comparison</title>
 {% endblock head %}
 
 {% block body %}
     <div class="container">
-        <h1>Сравнение критериев</h1>
+        <h1>Сравнение альтернатив</h1>
         <br>
         <form method="post">
             <table>
                 <tr>
-                    <th>Критерии</th>
-                    {% for c in criterions %}
-                        <th>{{ c.cname }}</th>
+                    <th>Альтернативы</th>
+                    {% for a in alternatives %}
+                        <th>{{ a.aname }}</th>
                     {% endfor %}
                 </tr>
-                {% for cr in criterions %}
+                {% for ar in alternatives %}
                     <tr>
-                        <td>{{ cr.cname }}</td>
-                        {% for cd in criterions %}
+                        <td>{{ ar.aname }}</td>
+                        {% for ad in alternatives %}
                             {% if forloop.counter == forloop.parentloop.counter %}
                                 <td>1</td> 
                             {% elif forloop.counter > forloop.parentloop.counter %}
-                                <td><input type="text" class="table-input" name="{{ cr.id }}_{{cd.id}}"/></td>
+                                <td><input type="text" class="table-input" name="{{ ar.id }}_{{ad.id}}"/></td>
                             {% else %}
                                 <td>рассчет</td> 
                             {% endif %}
