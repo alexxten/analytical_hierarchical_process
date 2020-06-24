@@ -5,6 +5,12 @@ class CriterionsAlternativesAmount(models.Model):
     criterions = models.IntegerField()
     alternatives = models.IntegerField()
 
+class CriterionsComparison(models.Model):
+    fk_id = models.IntegerField()
+    c1 = models.IntegerField()
+    c2 = models.IntegerField()
+    c1c2_value = models.FloatField()
+
 class CriterionsNames(models.Model):
     fk_id = models.IntegerField()
     cname = models.TextField()

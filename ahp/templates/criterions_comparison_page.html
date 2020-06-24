@@ -23,14 +23,20 @@
                     <tr>
                         <td>{{ cr.cname }}</td>
                         {% for cd in criterions %}
-                            <td><input type="text" class="table-input" name="name"/></td>
+                            {% if forloop.counter == forloop.parentloop.counter %}
+                                <td>1</td> 
+                            {% elif forloop.counter > forloop.parentloop.counter %}
+                                <td><input type="text" class="table-input" name="{{ cr.id }}_{{cd.id}}"/></td>
+                            {% else %}
+                                <td>рассчет</td> 
+                            {% endif %}
                         {% endfor %}
                     </tr>
                 {% endfor %}
             </table>
             <br>
             {% csrf_token %}
-            <button type="submit" class="btn btn-primary">Отправить</button>
+            <button type="submit" class="btn btn-primary">Рассчитать</button>
         </form>
     </div>
     {% endblock body %}

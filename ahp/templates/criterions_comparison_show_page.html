@@ -1,0 +1,26 @@
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    
+{% load static %}
+<link rel="stylesheet" href={% static 'style.css' %} type="text/css">
+
+{% block head %}
+    <title>Criterions comparison info</title>
+{% endblock head %}
+
+{% block body %}
+    <div class="container">
+        <h1>Таблица сравнения критериев</h1>
+        <br>
+        
+        <div class="table">
+            {{ comparison_table | safe }}
+        </div>
+        
+        <br>
+        <form method=""></form>
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Рассчитать</button>
+        </form>
+
+    </div>
+    {% endblock body %}
