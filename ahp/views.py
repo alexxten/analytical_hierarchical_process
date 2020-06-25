@@ -239,7 +239,7 @@ def __consistency_mark(
 ) -> float:
     df = copy.deepcopy(data)
 
-    L = (df.iloc[-1, :-2] * df[normalized_eval_col].iloc[:-1]).sum()
+    L = sum([v1*v2 for v1, v2 in zip(df.iloc[-1, :-2],df[normalized_eval_col].iloc[:-1])])
     consistency_index = (L - items_num) / (items_num - 1)
     consistency_mark = consistency_index / RandomConsistencyIndex[f'item_{items_num}'].value
     
@@ -248,7 +248,7 @@ def __consistency_mark(
 class RandomConsistencyIndex(enum.Enum):
     item_1 = 0
     item_2 = 0
-    # TODO что с этим делать??? division by zero
+    # TODO division by zero?
     item_3 = 0.58
     item_4 = 0.9
     item_5 = 1.12
