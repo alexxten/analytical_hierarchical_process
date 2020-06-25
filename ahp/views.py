@@ -125,27 +125,85 @@ def alternatives_comparison(request, id):
     """
     Метод для ввода и сохранения информации по сравнению альтернатив
     """
-    anames = models.AlternativesNames.objects.raw(f'SELECT * from ahp_alternativesnames where fk_id={id}')
+    alternatives = models.AlternativesNames.objects.raw(
+        f'SELECT * from ahp_alternativesnames where fk_id={id}',
+    )
+    criterions = models.CriterionsNames.objects.raw(
+        f'SELECT * from ahp_criterionsnames where fk_id={id}',
+    )
+    show_list = []
+
     if request.method == 'POST':
-        for a1, item1 in enumerate(anames):
-            a1 = a1 + 1
-            for a2, item2 in enumerate(anames):
-                a2 = a2 + 1
-                if a2 > a1:
-                    r = models.AlternativesComparison(
-                        fk_id = id,
-                        a1 = item1.id,
-                        a2 = item2.id,
-                        a1a2_value = request.POST.get(f'{item1.id}_{item2.id}'),
-                    )
-                    r.save()
-        # return redirect(alternatives_comparison_show, id=id)
+        show = [k for k in request.POST.keys() if '_show' in k]
+        if show:
+            c_id = show[0].replace('_show', '')
+            for a1, item1 in enumerate(alternatives):
+                a1 = a1 + 1
+                for a2, item2 in enumerate(alternatives):
+                    a2 = a2 + 1
+                    if a2 > a1:
+                        r = models.AlternativesComparison(
+                            fk_id = id,
+                            c_id=c_id,
+                            a1=item1.id,
+                            a2= item2.id,
+                            a1a2_value = request.POST.get(f'{item1.id}_{item2.id}'),
+                        )
+                        r.save()
+            df = _get_alternatives_comparison_table(id=id)
+            show_list.append(c_id)
+            context = {
+                'alternatives': alternatives, 
+                'criterions': criterions,
+                'show': show_list,
+                'df': df.to_html()
+            }
+            return render(request, 'alternatives_comparison_page.html', context)
     else:
-        context = {'alternatives': anames}
+        context = {'alternatives': alternatives, 'criterions': criterions}
         return render(request, 'alternatives_comparison_page.html', context)
 
-def make_alternatives_comparison(id: int):
-    return 
+def _get_alternatives_comparison_table(id: int, c_id: int) -> pd.DataFrame:
+    """
+    Метод для формирования датафрейма со сравнением альтернатив по определенному критерию
+    """
+    items = models.CriterionsNames.objects.raw(
+        f'SELECT * from ahp_criterionsnames where id={с_id}',
+    )
+    values = models.AlternativesComparison.objects.raw(
+        f'SELECT * from ahp_criterionscomparison where fk_id={id} and c_id={c_id}',
+    )
+    values = [v for v in values]
+    values = {
+        f'{c1}_{c2}': v for c1, c2,v in zip(
+            [i.c1 for i in values],
+            [i.c2 for i in values],
+            [i.c1c2_value for i in values],
+        )
+    }
+    
+    cnames = [i.cname for i in items]
+    # df = pd.DataFrame(columns=cnames)
+
+    # for i, row in enumerate(items):
+    #     r = []
+    #     i1 = i + 1
+    #     for j, col in enumerate(items):
+    #         j1 = j + 1
+    #         if j1 == i1:
+    #             r.append(1)
+    #         else:
+    #             v = values.get(f'{row.id}_{col.id}') or values.get(f'{col.id}_{row.id}')
+    #             if j1 > i1:
+    #                 r.append(v)
+    #             else:
+    #                 r.append(1/v)
+    #     df = df.append(pd.DataFrame([r], columns=cnames), ignore_index=True)
+
+    # df = df.set_index([pd.Index(cnames)])
+
+    df = pd.DataFrame([[1,2], [3,4]])
+    return df
 
 def _get_criterions_comparison_table(id: int) -> pd.DataFrame:
     """
@@ -184,7 +242,7 @@ def _get_criterions_comparison_table(id: int) -> pd.DataFrame:
                     r.append(1/v)
         df = df.append(pd.DataFrame([r], columns=cnames), ignore_index=True)
 
-    df = df.set_index([pd.Index(cnames)], 'R')
+    df = df.set_index([pd.Index(cnames)])
 
     return df
 

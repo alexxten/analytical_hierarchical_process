@@ -10,33 +10,43 @@
 {% block body %}
     <div class="container">
         <h1>Сравнение альтернатив</h1>
-        <br>
+        {% for criterion in criterions %}
         <form method="post">
-            <table>
-                <tr>
-                    <th>Альтернативы</th>
-                    {% for a in alternatives %}
-                        <th>{{ a.aname }}</th>
-                    {% endfor %}
-                </tr>
-                {% for ar in alternatives %}
+            
+                <br>
+                <br>
+                <h3>Сравнение по критерию {{ criterion.cname }}</h3>
+                <br>
+                <table>
                     <tr>
-                        <td>{{ ar.aname }}</td>
-                        {% for ad in alternatives %}
-                            {% if forloop.counter == forloop.parentloop.counter %}
-                                <td>1</td> 
-                            {% elif forloop.counter > forloop.parentloop.counter %}
-                                <td><input type="text" class="table-input" name="{{ ar.id }}_{{ad.id}}"/></td>
-                            {% else %}
-                                <td>рассчет</td> 
-                            {% endif %}
+                        <th>Альтернативы</th>
+                        {% for a in alternatives %}
+                            <th>{{ a.aname }}</th>
                         {% endfor %}
                     </tr>
-                {% endfor %}
-            </table>
-            <br>
+                    {% for ar in alternatives %}
+                        <tr>
+                            <td>{{ ar.aname }}</td>
+                            {% for ad in alternatives %}
+                                {% if forloop.counter == forloop.parentloop.counter %}
+                                    <td>1</td> 
+                                {% elif forloop.counter > forloop.parentloop.counter %}
+                                    <td><input type="text" class="table-input" name="{{ criterion.id }}_{{ ar.id }}_{{ad.id}}"/></td>
+                                {% else %}
+                                    <td>-</td> 
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </table>
+                <br>
+                <button type="submit" class="btn btn-primary" name="{{ criterion.id }}_show">Рассчитать</button>
+                <button type="submit" class="btn btn-primary" name="{{ criterion.id }}_check">Проверка на корректность</button>
             {% csrf_token %}
-            <button type="submit" class="btn btn-primary">Рассчитать</button>
+            <br>  
         </form>
+        {% endfor %}
+        <br>
+        <button type="submit" class="btn btn-primary" name="next">Далее</button> 
     </div>
     {% endblock body %}

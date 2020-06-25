@@ -24,3 +24,10 @@ class AlternativesCriterionsInfo(models.Model):
     c_id = models.IntegerField()
     a_id = models.IntegerField()
     value = models.FloatField()
+
+class AlternativesComparison(models.Model):
+    fk_id = models.IntegerField()
+    c_id = models.IntegerField()
+    a1 = models.IntegerField()
+    a2 = models.IntegerField()
+    a1a2_value = models.FloatField()
