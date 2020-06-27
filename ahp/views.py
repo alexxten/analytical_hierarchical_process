@@ -163,6 +163,7 @@ def alternatives_comparison(request, id):
                 'check': False,
             }
             return render(request, 'alternatives_comparison_page.html', context)
+        
         elif 'check' in request.POST:
             for c in criterions:
                 df = _get_alternatives_comparison_table(id=id, c_id=int(c.id))
@@ -180,6 +181,9 @@ def alternatives_comparison(request, id):
             }
             return render(request, 'alternatives_comparison_page.html', context)
 
+        else:
+            return redirect(final_comparison, id=id)
+
     else:
         context = {
             'alternatives': alternatives, 
@@ -188,6 +192,22 @@ def alternatives_comparison(request, id):
             'check': False,
         }
         return render(request, 'alternatives_comparison_page.html', context)
+
+def final_comparison(request, id):
+    if request.method == 'POST':
+        pass
+    else:
+        alternatives = models.AlternativesNames.objects.raw(
+            f'SELECT * from ahp_alternativesnames where fk_id={id}',
+        )
+        
+        result = __get_global_priority_value(id=id)
+
+        context = {
+            'alternatives': alternatives,
+            'result': result,
+        }
+        return render(request, 'final_comparison_page.html', context)
 
 def _get_alternatives_comparison_table(id: int, c_id: int) -> pd.DataFrame:
     """
@@ -292,6 +312,34 @@ def _get_consistency_mark(comparison_table: pd.DataFrame) -> Tuple[float, pd.Dat
     )
 
     return consistency_mark, df
+
+def __get_global_priority_value(id: int):
+    result = {}
+
+    criterions = models.CriterionsNames.objects.raw(
+        f'SELECT * from ahp_criterionsnames where fk_id={id}',
+    )
+    c_df = _get_criterions_comparison_table(id=id)
+    _, c_df = _get_consistency_mark(comparison_table=c_df)
+    norm_c_df = c_df['Нормализованные оценки'].iloc[:-1]
+    # indexes - criterions
+
+    df = pd.DataFrame()
+    for c in criterions:
+        a_df = _get_alternatives_comparison_table(id=id, c_id=int(c.id))
+        _, a_df = _get_consistency_mark(comparison_table=a_df)
+        norm_df = a_df['Нормализованные оценки'].iloc[:-1]
+        # indexes - alternatives
+        df[c.cname] = norm_df
+
+    for a in df.iterrows():
+        res = 0
+        for i in norm_c_df.index:
+            mult = (a[1][a[1].index == i] * norm_c_df[i]).values[0]
+            res += mult
+        result[a[0]] = res
+
+    return {k: v for k, v in sorted(result.items(), key=lambda item: item[1])}
 
 
 def __component_evaluation(data: pd.DataFrame):
