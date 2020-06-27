@@ -19,7 +19,6 @@
                 <button type="submit" class="btn btn-primary" name="{{ criterion.id }}_check">Проверка на корректность</button>
             {% elif criterion.id in check %}
                 {{ df_dict| get_item:criterion.id| safe }}
-                {{ }}
                 {% if consistency_mark < 1 %}
                     <p>Все ок</p>
                 {% else %}
