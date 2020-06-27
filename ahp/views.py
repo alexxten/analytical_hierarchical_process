@@ -13,14 +13,22 @@ from ahp import models
 
 def home(request):
     if request.method == 'POST':
+        c_num = request.POST.get('c_num')
+        a_num = request.POST.get('a_num')
         r = models.CriterionsAlternativesAmount(
-            criterions=request.POST.get('criterions'),
-            alternatives=request.POST.get('alternatives'),
+            criterions=c_num,
+            alternatives=a_num,
         )
         r.save()
         return redirect(start_analysis, id=r.pk)
     else:
-        return render(request, 'home_page.html')
+        c_max_num = [i for i in range(3, 11)]
+        a_max_num = [i for i in range(3, 11)]
+        context = {
+            'c_max_num': c_max_num,
+            'a_max_num': a_max_num,
+        }
+        return render(request, 'home_page.html', context)
 
 def start_analysis(request, id):
     record = models.CriterionsAlternativesAmount.objects.get(pk=id)
@@ -75,19 +83,37 @@ def criterions_comparison(request, id):
     """
     cnames = models.CriterionsNames.objects.raw(f'SELECT * from ahp_criterionsnames where fk_id={id}')
     if request.method == 'POST':
-        for c1, item1 in enumerate(cnames):
-            c1 = c1 + 1
-            for c2, item2 in enumerate(cnames):
-                c2 = c2 + 1
-                if c2 > c1:
-                    r = models.CriterionsComparison(
-                        fk_id = id,
-                        c1 = item1.id,
-                        c2 = item2.id,
-                        c1c2_value = request.POST.get(f'{item1.id}_{item2.id}'),
-                    )
-                    r.save()
-        return redirect(criterions_comparison_show, id=id)
+        if 'show' in request.POST:
+            for c1, item1 in enumerate(cnames):
+                c1 = c1 + 1
+                for c2, item2 in enumerate(cnames):
+                    c2 = c2 + 1
+                    if c2 > c1:
+                        r = models.CriterionsComparison(
+                            fk_id = id,
+                            c1 = item1.id,
+                            c2 = item2.id,
+                            c1c2_value = request.POST.get(f'{item1.id}_{item2.id}'),
+                        )
+                        r.save()
+            comparison_df = _get_criterions_comparison_table(id=id)
+            context = {
+                'criterions': cnames, 
+                'comparison_df': comparison_df.to_html(),
+                'show': True,
+            }
+            return render(request, 'criterions_comparison_page.html', context)
+        elif 'check' in request.POST:
+            comparison_df = _get_criterions_comparison_table(id=id)
+            consistency_mark, df = _get_consistency_mark(comparison_table=comparison_df)
+            context = { 
+                'comparison_df': df.to_html(),
+                'consistency_mark': consistency_mark,
+                'check': True,
+            }
+            return render(request, 'criterions_comparison_page.html', context)
+        else:
+            return redirect(alternatives_comparison, id=id)
     else:
         context = {'criterions': cnames}
         return render(request, 'criterions_comparison_page.html', context)
@@ -195,14 +221,12 @@ def alternatives_comparison(request, id):
 
 def final_comparison(request, id):
     if request.method == 'POST':
-        pass
+            return redirect(home)
     else:
         alternatives = models.AlternativesNames.objects.raw(
             f'SELECT * from ahp_alternativesnames where fk_id={id}',
         )
-        
         result = __get_global_priority_value(id=id)
-
         context = {
             'alternatives': alternatives,
             'result': result,

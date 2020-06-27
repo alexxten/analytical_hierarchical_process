@@ -8,35 +8,49 @@
 {% endblock head %}
 
 {% block body %}
+    <div class="header">
+        <div class="container">
+            <h1>Сравнение критериев</h1>
+        </div>
+    </div>
     <div class="container">
-        <h1>Сравнение критериев</h1>
-        <br>
         <form method="post">
-            <table>
-                <tr>
-                    <th>Критерии</th>
-                    {% for c in criterions %}
-                        <th>{{ c.cname }}</th>
-                    {% endfor %}
-                </tr>
-                {% for cr in criterions %}
-                    <tr>
-                        <td>{{ cr.cname }}</td>
-                        {% for cd in criterions %}
-                            {% if forloop.counter == forloop.parentloop.counter %}
-                                <td>1</td> 
-                            {% elif forloop.counter > forloop.parentloop.counter %}
-                                <td><input type="text" class="table-input" name="{{ cr.id }}_{{cd.id}}"/></td>
-                            {% else %}
-                                <td>рассчет</td> 
-                            {% endif %}
-                        {% endfor %}
-                    </tr>
-                {% endfor %}
-            </table>
-            <br>
             {% csrf_token %}
-            <button type="submit" class="btn btn-primary">Рассчитать</button>
+            {% if show %}
+                {{ comparison_df|safe }}
+                <br>
+                <button type="submit" class="btn btn-success" name="check">Проверить на корректность</button>
+            {% elif check %}
+                {{ comparison_df|safe }}
+                <br>
+                <button type="submit" class="btn btn-success" name="next">Далее</button>
+            {% else %}
+                <br>
+                <table class="table table-striped table-bordered text-center">
+                    <thead>
+                        <th class="table-th">Критерии</th>
+                        {% for c in criterions %}
+                            <th class="table-th">{{ c.cname }}</th>
+                        {% endfor %}
+                    </thead>
+                    {% for cr in criterions %}
+                        <tr>
+                            <td>{{ cr.cname }}</td>
+                            {% for cd in criterions %}
+                                {% if forloop.counter == forloop.parentloop.counter %}
+                                    <td>1</td> 
+                                {% elif forloop.counter > forloop.parentloop.counter %}
+                                    <td><input type="text" class="table-input" name="{{ cr.id }}_{{cd.id}}"/></td>
+                                {% else %}
+                                    <td>-</td> 
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </table>
+                <br>
+                <button type="submit" class="btn btn-success" name="show">Рассчитать</button>
+            {% endif %}
         </form>
     </div>
     {% endblock body %}

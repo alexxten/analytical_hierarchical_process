@@ -8,16 +8,35 @@
 {% endblock %}
 
 {% block body %}
+    <div class="header">
+        <div class="container">
+            <h1>Метод анализа иерархий</h1>
+        </div>
+    </div>
     <div class="container">
-        <h1>Welcome home</h1>
-        <br>
-        <p>Проект по СППР. Метод анализа иерархий. Тыкни кнопу чтобы начать</p>
+        <div class="add-border">
+            <p class="add-border">Проект по СППР. Реализация метода анализа иерархий</p>
+        </div> 
         <form method="post"> 
             {% csrf_token %}
-            <p>Введите количество критериев</p>
-            <input type="text" value="" name="criterions">
-            <p>Введите количество альтернатив</p>
-            <input type="text" value="" name="alternatives">
+            <div class="select">
+                <select name="c_num">
+                    <option selected disabled>Выберите количество критериев</option>
+                    {% for i in c_max_num %}
+                        <option>{{ i }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <br>
+            <div class="select">
+                <select name="a_num">
+                    <option selected disabled>Выберите количество альтернатив</option>
+                    {% for i in a_max_num %}
+                        <option>{{ i }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <br>
             <input type="submit" value="Начать" class="btn btn-success">
         </form> 
     </div>
