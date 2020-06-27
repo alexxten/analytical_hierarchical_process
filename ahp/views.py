@@ -132,6 +132,7 @@ def alternatives_comparison(request, id):
         f'SELECT * from ahp_criterionsnames where fk_id={id}',
     )
     show_list = []
+    df_dict = {}
 
     if request.method == 'POST':
         show = [k for k in request.POST.keys() if '_show' in k]
@@ -146,17 +147,18 @@ def alternatives_comparison(request, id):
                             fk_id = id,
                             c_id=c_id,
                             a1=item1.id,
-                            a2= item2.id,
-                            a1a2_value = request.POST.get(f'{item1.id}_{item2.id}'),
+                            a2=item2.id,
+                            a1a2_value = request.POST.get(f'{c_id}_{item1.id}_{item2.id}'),
                         )
                         r.save()
-            df = _get_alternatives_comparison_table(id=id)
-            show_list.append(c_id)
+            df = _get_alternatives_comparison_table(id=id, c_id=int(c_id))
+            show_list.append(int(c_id))
+            df_dict[c_id] = df.to_html()
             context = {
                 'alternatives': alternatives, 
                 'criterions': criterions,
                 'show': show_list,
-                'df': df.to_html()
+                'df_dict': df_dict,
             }
             return render(request, 'alternatives_comparison_page.html', context)
     else:
@@ -167,42 +169,40 @@ def _get_alternatives_comparison_table(id: int, c_id: int) -> pd.DataFrame:
     """
     Метод для формирования датафрейма со сравнением альтернатив по определенному критерию
     """
-    items = models.CriterionsNames.objects.raw(
-        f'SELECT * from ahp_criterionsnames where id={с_id}',
+    items = models.AlternativesNames.objects.raw(
+        f'SELECT * from ahp_alternativesnames where fk_id={id}',
     )
     values = models.AlternativesComparison.objects.raw(
-        f'SELECT * from ahp_criterionscomparison where fk_id={id} and c_id={c_id}',
+        f'SELECT * from ahp_alternativescomparison where fk_id={id} and c_id={c_id}',
     )
     values = [v for v in values]
     values = {
-        f'{c1}_{c2}': v for c1, c2,v in zip(
-            [i.c1 for i in values],
-            [i.c2 for i in values],
-            [i.c1c2_value for i in values],
+        f'{a1}_{a2}': v for a1, a2,v in zip(
+            [i.a1 for i in values],
+            [i.a2 for i in values],
+            [i.a1a2_value for i in values],
         )
     }
     
-    cnames = [i.cname for i in items]
-    # df = pd.DataFrame(columns=cnames)
+    anames = [i.aname for i in items]
+    df = pd.DataFrame(columns=anames)
 
-    # for i, row in enumerate(items):
-    #     r = []
-    #     i1 = i + 1
-    #     for j, col in enumerate(items):
-    #         j1 = j + 1
-    #         if j1 == i1:
-    #             r.append(1)
-    #         else:
-    #             v = values.get(f'{row.id}_{col.id}') or values.get(f'{col.id}_{row.id}')
-    #             if j1 > i1:
-    #                 r.append(v)
-    #             else:
-    #                 r.append(1/v)
-    #     df = df.append(pd.DataFrame([r], columns=cnames), ignore_index=True)
+    for i, row in enumerate(items):
+        r = []
+        i1 = i + 1
+        for j, col in enumerate(items):
+            j1 = j + 1
+            if j1 == i1:
+                r.append(1)
+            else:
+                v = values.get(f'{row.id}_{col.id}') or values.get(f'{col.id}_{row.id}')
+                if j1 > i1:
+                    r.append(v)
+                else:
+                    r.append(1/v)
+        df = df.append(pd.DataFrame([r], columns=anames), ignore_index=True)
 
-    # df = df.set_index([pd.Index(cnames)])
-
-    df = pd.DataFrame([[1,2], [3,4]])
+    df = df.set_index([pd.Index(anames)])
     return df
 
 def _get_criterions_comparison_table(id: int) -> pd.DataFrame:
