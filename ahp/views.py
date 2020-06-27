@@ -131,38 +131,62 @@ def alternatives_comparison(request, id):
     criterions = models.CriterionsNames.objects.raw(
         f'SELECT * from ahp_criterionsnames where fk_id={id}',
     )
-    show_list = []
+
     df_dict = {}
+    consistency_marks = {}
+    df_consistency_dict = {}
 
     if request.method == 'POST':
-        show = [k for k in request.POST.keys() if '_show' in k]
-        if show:
-            c_id = show[0].replace('_show', '')
-            for a1, item1 in enumerate(alternatives):
-                a1 = a1 + 1
-                for a2, item2 in enumerate(alternatives):
-                    a2 = a2 + 1
-                    if a2 > a1:
-                        r = models.AlternativesComparison(
-                            fk_id = id,
-                            c_id=c_id,
-                            a1=item1.id,
-                            a2=item2.id,
-                            a1a2_value = request.POST.get(f'{c_id}_{item1.id}_{item2.id}'),
-                        )
-                        r.save()
-            df = _get_alternatives_comparison_table(id=id, c_id=int(c_id))
-            show_list.append(int(c_id))
-            df_dict[c_id] = df.to_html()
+        if 'show' in request.POST:
+            for c in criterions:
+                for a1, item1 in enumerate(alternatives):
+                    a1 = a1 + 1
+                    for a2, item2 in enumerate(alternatives):
+                        a2 = a2 + 1
+                        if a2 > a1:
+                            r = models.AlternativesComparison(
+                                fk_id = id,
+                                c_id=c.id,
+                                a1=item1.id,
+                                a2=item2.id,
+                                a1a2_value = request.POST.get(f'{c.id}_{item1.id}_{item2.id}'),
+                            )
+                            r.save()
+                df = _get_alternatives_comparison_table(id=id, c_id=int(c.id))
+                df_dict[c.id] = df.to_html()
+
             context = {
                 'alternatives': alternatives, 
                 'criterions': criterions,
-                'show': show_list,
+                'show': True,
                 'df_dict': df_dict,
+                'check': False,
             }
             return render(request, 'alternatives_comparison_page.html', context)
+        elif 'check' in request.POST:
+            for c in criterions:
+                df = _get_alternatives_comparison_table(id=id, c_id=int(c.id))
+                consistency_mark, df = _get_consistency_mark(comparison_table=df)
+                df_consistency_dict[c.id] = df.to_html()
+                consistency_marks[c.id] = consistency_mark
+
+            context = {
+                'alternatives': alternatives, 
+                'criterions': criterions,
+                'show': False,
+                'df_consistency_dict': df_consistency_dict,
+                'check': True,
+                'consistency_marks': consistency_marks,
+            }
+            return render(request, 'alternatives_comparison_page.html', context)
+
     else:
-        context = {'alternatives': alternatives, 'criterions': criterions}
+        context = {
+            'alternatives': alternatives, 
+            'criterions': criterions,
+            'show': False,
+            'check': False,
+        }
         return render(request, 'alternatives_comparison_page.html', context)
 
 def _get_alternatives_comparison_table(id: int, c_id: int) -> pd.DataFrame:

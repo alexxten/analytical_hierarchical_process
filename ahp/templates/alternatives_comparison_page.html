@@ -12,21 +12,42 @@
 {% block body %}
     <div class="container">
         <h1>Сравнение альтернатив</h1>
-        {% for criterion in criterions %}
-            <br><h3>Сравнение по критерию {{ criterion.cname }}</h3><br>
-            {% if criterion.id in show %}
+        
+        {% if show %}
+            {% for criterion in criterions %}
+                <br><h3>Сравнение по критерию {{ criterion.cname }}</h3><br>
                 {{ df_dict| get_item:criterion.id| safe }}
-                <button type="submit" class="btn btn-primary" name="{{ criterion.id }}_check">Проверка на корректность</button>
-            {% elif criterion.id in check %}
-                {{ df_dict| get_item:criterion.id| safe }}
-                {{ }}
-                {% if consistency_mark < 1 %}
-                    <p>Все ок</p>
+                <br>
+            {% endfor %}
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary" name="check">Проверить на корректность</button>
+            </form>
+            
+        {% elif check %}
+            {% for criterion in criterions %}
+                <br><h3>Сравнение по критерию {{ criterion.cname }}</h3><br>
+                {{ df_consistency_dict|get_item:criterion.id|safe }}
+                <br>
+                {% if consistency_marks|get_item:criterion.id %}
+                    <p>OK</p>
                 {% else %}
-                    <p>Не ок</p>
+                    <p>Нихера не ок</p>
                 {% endif %}
-            {% else %}
-                <form method="post">
+                {{ consistency_marks| get_item:criterion.id| safe }}
+                <br>
+            {% endfor %}
+            <br>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary" name="next">Далее</button>
+            </form>
+            
+        {% else %}
+            <form method="post">
+                {% csrf_token %}
+                {% for criterion in criterions %}
+                    <br><h3>Сравнение по критерию {{ criterion.cname }}</h3><br>
                     <table>
                         <tr>
                             <th>Альтернативы</th>
@@ -49,14 +70,9 @@
                             </tr>
                         {% endfor %}
                     </table>
-                    <br>
-                    <button type="submit" class="btn btn-primary" name="{{ criterion.id }}_show">Рассчитать</button>
-                    {% csrf_token %}
-                    <br>  
-                </form>
-            {% endif %}
-        {% endfor %}
-        <br>
-        <button type="submit" class="btn btn-primary" name="next">Далее</button> 
+                {% endfor %} 
+                <button type="submit" class="btn btn-primary" name="show">Рассчитать</button>
+            </form>
+        {% endif %}   
     </div>
     {% endblock body %}
