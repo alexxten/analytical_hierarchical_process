@@ -78,16 +78,7 @@ select {
   }
 
 /* TABLE */
-.table-th {
+th {
     background-color: #44506A;
     color: #FFFFFF;
 }
-/* table {
-    border-collapse: collapse;
-    width: 70%;
-    text-align: center;
-}
-  
-table, th, td {
-border: 1px dotted #3e4961;
-} */

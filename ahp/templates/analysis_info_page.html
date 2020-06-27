@@ -19,9 +19,9 @@
             <br>
             <table class="table table-striped table-bordered text-center">
                 <tr>
-                    <th class="table-th">Значения</th>
+                    <th>Значения</th>
                     {% for c in criterions %}
-                        <th class="table-th">{{ c.cname }}</th>
+                        <th>{{ c.cname }}</th>
                     {% endfor %}
                 </tr>
                 {% for a in alternatives %}
@@ -33,7 +33,7 @@
                     </tr> 
                 {% endfor %}
             </table>
-            <button type="submit" class="btn btn-success">Далее</button>
+            <button type="submit" class="btn btn-success btn-lg">Далее</button>
         </form>
     </div>
 {% endblock body %}

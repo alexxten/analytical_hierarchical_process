@@ -118,35 +118,6 @@ def criterions_comparison(request, id):
         context = {'criterions': cnames}
         return render(request, 'criterions_comparison_page.html', context)
 
-def criterions_comparison_show(request, id):
-    """
-    Метод для отображения информации по сравнению критериев
-    """
-    criterions = models.CriterionsNames.objects.raw(
-        f'SELECT * from ahp_criterionsnames where fk_id={id}',
-    )
-    comparison_df = _get_criterions_comparison_table(id=id)
-
-    if request.method == 'POST':
-        if "check" in request.POST:
-            consistency_mark, df = _get_consistency_mark(comparison_table=comparison_df)
-            context = { 
-                'comparison_table': df.to_html(),
-                'consistency_mark': consistency_mark,
-                'show_next': True,
-                'show_check': False,
-            }
-            return render(request, 'criterions_comparison_show_page.html', context)
-        elif 'next' in request.POST:
-            return redirect(alternatives_comparison, id=id)
-    else:
-        context = { 
-            'comparison_table': comparison_df.to_html(),
-            'show_next': False,
-            'show_check': True,
-        }
-        return render(request, 'criterions_comparison_show_page.html', context)
-
 def alternatives_comparison(request, id):
     """
     Метод для ввода и сохранения информации по сравнению альтернатив

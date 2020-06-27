@@ -10,13 +10,18 @@
 {% endblock head %}
 
 {% block body %}
+    <div class="header">
+        <div class="container">
+            <h1>Итоговое сравнение</h1>
+        </div>
+    </div>
     <div class="container">
-        <h1>Итог</h1>
-        <table>
-            <tr>
+        <br>
+        <table class="table table-striped table-bordered text-center">
+            <thead>
                 <th>Альтернатива</th>
                 <th>Значение глобального критерия</th>
-            </tr>
+            </thead>
             {% for a in alternatives %}
                 <tr>
                     <td>
@@ -31,7 +36,7 @@
         
         <form method="post">
             {% csrf_token %}
-            <button type="submit" class="btn btn-primary" name="show">Кнопа</button>
+            <button type="submit" class="btn btn-success btn-lg">На главную</button>
         </form> 
     </div>
     {% endblock body %}

@@ -10,9 +10,12 @@
 {% endblock head %}
 
 {% block body %}
+    <div class="header">
+        <div class="container">
+            <h1>Сравнение альтернатив</h1>
+        </div>
+    </div>
     <div class="container">
-        <h1>Сравнение альтернатив</h1>
-        
         {% if show %}
             {% for criterion in criterions %}
                 <br><h3>Сравнение по критерию {{ criterion.cname }}</h3><br>
@@ -21,7 +24,7 @@
             {% endfor %}
             <form method="post">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-primary" name="check">Проверить на корректность</button>
+                <button type="submit" class="btn btn-success btn-lg" name="check">Проверить на корректность</button>
             </form>
             
         {% elif check %}
@@ -40,7 +43,7 @@
             <br>
             <form method="post">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-primary" name="next">Подсчет итогов</button>
+                <button type="submit" class="btn btn-success btn-lg" name="next">Подсчет итогов</button>
             </form>
             
         {% else %}
@@ -48,13 +51,13 @@
                 {% csrf_token %}
                 {% for criterion in criterions %}
                     <br><h3>Сравнение по критерию {{ criterion.cname }}</h3><br>
-                    <table>
-                        <tr>
+                    <table class="table table-striped table-bordered text-center">
+                        <thead>
                             <th>Альтернативы</th>
                             {% for a in alternatives %}
                                 <th>{{ a.aname }}</th>
                             {% endfor %}
-                        </tr>
+                        </thead>
                         {% for ar in alternatives %}
                             <tr>
                                 <td>{{ ar.aname }}</td>
@@ -71,7 +74,7 @@
                         {% endfor %}
                     </table>
                 {% endfor %} 
-                <button type="submit" class="btn btn-primary" name="show">Рассчитать</button>
+                <button type="submit" class="btn btn-success btn-lg" name="show">Рассчитать</button>
             </form>
         {% endif %}   
     </div>
