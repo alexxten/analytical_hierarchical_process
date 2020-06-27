@@ -16,10 +16,23 @@
             {{ comparison_table | safe }}
         </div>
         
+        {% if show_next %}
+            <p>{{ consistency_mark }}</p>
+            {% if consistency_mark < 1 %}
+                <p>Все ок</p>
+            {% else %}
+                <p>Не ок</p>
+            {% endif %}
+        {% endif %}
+
         <br>
-        <form method=""></form>
+        <form method="POST">
             {% csrf_token %}
-            <button type="submit" class="btn btn-primary">Рассчитать</button>
+            {% if show_check%}
+                <button type="submit" class="btn btn-primary" name="check">Проверить на корректность</button>
+            {% elif show_next %}
+                <button type="submit" class="btn btn-primary" name="next">Далее</button>
+            {% endif %}
         </form>
 
     </div>
