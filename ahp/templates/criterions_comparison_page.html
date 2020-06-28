@@ -8,35 +8,60 @@
 {% endblock head %}
 
 {% block body %}
+    <div class="header">
+        <div class="container">
+            <h1>Сравнение критериев</h1>
+        </div>
+    </div>
     <div class="container">
-        <h1>Сравнение критериев</h1>
-        <br>
         <form method="post">
-            <table>
-                <tr>
-                    <th>Критерии</th>
-                    {% for c in criterions %}
-                        <th>{{ c.cname }}</th>
-                    {% endfor %}
-                </tr>
-                {% for cr in criterions %}
-                    <tr>
-                        <td>{{ cr.cname }}</td>
-                        {% for cd in criterions %}
-                            {% if forloop.counter == forloop.parentloop.counter %}
-                                <td>1</td> 
-                            {% elif forloop.counter > forloop.parentloop.counter %}
-                                <td><input type="text" class="table-input" name="{{ cr.id }}_{{cd.id}}"/></td>
-                            {% else %}
-                                <td>рассчет</td> 
-                            {% endif %}
-                        {% endfor %}
-                    </tr>
-                {% endfor %}
-            </table>
-            <br>
             {% csrf_token %}
-            <button type="submit" class="btn btn-primary">Рассчитать</button>
+            {% if show %}
+                
+                <br>{{ comparison_df|safe }}<br>
+                <button type="submit" class="btn btn-success btn-lg" name="check">Проверить на корректность</button>
+            {% elif check %}
+                <br>{{ comparison_df|safe }}<br>
+                {% if consistency_mark < 1%}
+                    <div class="add-border alert alert-success">
+                        <p>Показатель согласованности меньше 1, можно продолжать анализ</p>
+                        <p>{{ consistency_mark }}</p>
+                    </div>
+                    <br><button type="submit" class="btn btn-success btn-lg" name="next">Далее</button><br>
+                {% else %}
+                    <div class="add-border alert alert-danger">
+                        <p>Показатель согласованности больше или равен 1</p>
+                        <p>{{ consistency_mark }}</p>
+                    </div>
+                    <br><button type="submit" class="btn btn-secondary btn-lg" name="main">На главную</button><br>
+                {% endif %}
+            {% else %}
+                <br>
+                <table class="table table-striped table-bordered text-center">
+                    <thead>
+                        <th>Критерии</th>
+                        {% for c in criterions %}
+                            <th>{{ c.cname }}</th>
+                        {% endfor %}
+                    </thead>
+                    {% for cr in criterions %}
+                        <tr>
+                            <td>{{ cr.cname }}</td>
+                            {% for cd in criterions %}
+                                {% if forloop.counter == forloop.parentloop.counter %}
+                                    <td>1</td> 
+                                {% elif forloop.counter > forloop.parentloop.counter %}
+                                    <td><input type="text" class="table-input" name="{{ cr.id }}_{{cd.id}}"/></td>
+                                {% else %}
+                                    <td>-</td> 
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </table>
+                <br>
+                <button type="submit" class="btn btn-success btn-lg" name="show">Рассчитать</button>
+            {% endif %}
         </form>
     </div>
     {% endblock body %}

@@ -8,13 +8,18 @@
 {% endblock head %}
 
 {% block body %}
+    <div class="header">
+        <div class="container">
+            <h1>Информация по альтернативам</h1>
+        </div>
+    </div>
     <div class="container">
-        <h1>Ввод информации о значениях критериев по альтернативам</h1>
-        <br>
         <form method="post">
-            <table>
+            {% csrf_token %}
+            <br>
+            <table class="table table-striped table-bordered text-center">
                 <tr>
-                    <th>Альтернатива/Критерий</th>
+                    <th>Значения</th>
                     {% for c in criterions %}
                         <th>{{ c.cname }}</th>
                     {% endfor %}
@@ -28,8 +33,7 @@
                     </tr> 
                 {% endfor %}
             </table>
-            {% csrf_token %}
-            <button type="submit" class="btn btn-primary">Отправить</button>
+            <button type="submit" class="btn btn-success btn-lg">Далее</button>
         </form>
     </div>
 {% endblock body %}

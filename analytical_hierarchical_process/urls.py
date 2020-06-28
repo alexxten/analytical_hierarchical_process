@@ -20,3 +20,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('ahp/', include('ahp.urls'))
 ]
+
+handler404 = 'ahp.views.handler404'
+handler500 = 'ahp.views.handler500'

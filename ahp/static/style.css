@@ -1,8 +1,93 @@
-body {
-    background-color: aliceblue;
+body { 
+    background-color:#F8F8FF;
 }
 
 .table-input {
     width: 100%;
     box-sizing: border-box;
+}
+
+h1 { 
+  color: #ffffff; 
+  font-family: 'Lucida Sans', Arial, sans-serif;
+  font-size: 54px; 
+  font-weight: bold;
+  font-weight: 250; 
+  line-height: 150%; 
+  margin: 0 0 58px; 
+}
+
+.header {
+    background-color:#3F729B;
+    height: 15%;
+    vertical-align: middle;
+}
+
+div .add-border {
+    display: table-cell;
+    height: 50px;
+    vertical-align: middle;
+}
+
+/* SELECT */
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  appearance: none;
+  outline: 0;
+  box-shadow: none;
+  border: 0 !important;
+  background: #44506A;
+  background-image: none;
+}
+/* Remove IE arrow */
+select::-ms-expand {
+  display: none;
+}
+  /* Custom Select */
+.select {
+  position: relative;
+  display: flex;
+  width: 20em;
+  height: 3em;
+  line-height: 3;
+  background: #44506A;
+  overflow: hidden;
+  border-radius: .25em;
+}
+select {
+  flex: 1;
+  padding: 0 .5em;
+  color: #fff;
+  cursor: pointer;
+}
+/* Arrow */
+.select::after {
+  content: '\25BC';
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0 1em;
+  background:#3e4961;
+  cursor: pointer;
+  pointer-events: none;
+  -webkit-transition: .25s all ease;
+  -o-transition: .25s all ease;
+  transition: .25s all ease;
+}
+
+/* TABLE */
+th {
+    background-color: #44506A;
+    color: #FFFFFF;
+    text-align: center;
+} 
+
+/* ERROR 404 */
+.error-container {
+  background-image: url('https://fonts.googleapis.com/css?family=Nunito+Sans');
+}
+svg {
+  width: 100%;
 }

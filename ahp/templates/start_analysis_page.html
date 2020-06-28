@@ -8,31 +8,38 @@
 {% endblock head %}
 
 {% block body %}
+    <div class="header">
+        <div class="container">
+            <h1>Старт анализа</h1>
+        </div>
+    </div>
     <div class="container">
-        <h1>Старт анализа</h1>
-        <form method="post"> 
-            <p>Введите критерии:</p>
-            <br>
-            <table>
-                <tr>
-                    <th>Критерий</th>
+        <form method="post">
+            {% csrf_token %} 
+            <div class="add-border">
+                <p>Введите критерии:</p>
+            </div>
+            <table class="table table-striped table-bordered text-center">
+                <thead>
+                    <th style="width:150px">Критерий</th>
                     <th>Название</th>
-                </tr>
+                </thead>  
                 {% for i in criterions %}
                     <tr>
                         <td>{{ i }}</td>
-                        <td><input type="text" class="table-input" name="c_{{ i }}"/></td>
+                        <td class="table-editable"><input type="text" class="table-input" name="c_{{ i }}"/></td>
                     </tr>
                 {% endfor %}
             </table>
             
-            <p>Введите альтернативы:</p>
-            <br>
-            <table>
-                <tr>
-                    <th>Альтернатива</th>
+            <div class="add-border">
+                <p>Введите альтернативы:</p>
+            </div>
+            <table class="table table-striped table-bordered text-center">
+                <thead>
+                    <th style="width:150px">Альтернатива</th>
                     <th>Название</th>
-                </tr>
+                </thead>
                 {% for i in alternatives %}
                     <tr>
                         <td>{{ i }}</td>
@@ -40,10 +47,9 @@
                     </tr>
                 {% endfor %}
             </table>
-
-            
-            {% csrf_token %}
-            <button type="submit" class="btn btn-primary">Старт</button>
+            <div class="add-border">
+                <button type="submit" class="btn btn-success btn-lg">Далее</button>
+            </div>
         </form> 
     </div>
 {% endblock body %}

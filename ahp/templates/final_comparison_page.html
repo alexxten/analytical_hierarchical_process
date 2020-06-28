@@ -1,0 +1,42 @@
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    
+{% load static %}
+<link rel="stylesheet" href={% static 'style.css' %} type="text/css">
+
+{% load template_filters %}
+
+{% block head %}
+    <title>Final comparison</title>
+{% endblock head %}
+
+{% block body %}
+    <div class="header">
+        <div class="container">
+            <h1>Итоговое сравнение</h1>
+        </div>
+    </div>
+    <div class="container">
+        <br>
+        <table class="table table-striped table-bordered text-center">
+            <thead>
+                <th>Альтернатива</th>
+                <th>Значение глобального критерия</th>
+            </thead>
+            {% for a in alternatives %}
+                <tr>
+                    <td>
+                        {{ a.aname }}
+                    </td>
+                    <td>
+                        {{ result|get_item:a.aname|safe }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+        
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success btn-lg">На главную</button>
+        </form> 
+    </div>
+    {% endblock body %}
