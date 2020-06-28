@@ -15,12 +15,19 @@ def home(request):
     if request.method == 'POST':
         c_num = request.POST.get('c_num')
         a_num = request.POST.get('a_num')
-        r = models.CriterionsAlternativesAmount(
-            criterions=c_num,
-            alternatives=a_num,
-        )
-        r.save()
-        return redirect(start_analysis, id=r.pk)
+        if c_num is None or a_num is None:
+            return render(
+                request, 
+                'error_500.html', 
+                {'description': 'Отсутствуют необходимые данные'},
+            )
+        else:
+            r = models.CriterionsAlternativesAmount(
+                criterions=c_num,
+                alternatives=a_num,
+            )
+            r.save()
+            return redirect(start_analysis, id=r.pk)
     else:
         c_max_num = [i for i in range(3, 11)]
         a_max_num = [i for i in range(3, 11)]
@@ -382,3 +389,6 @@ class RandomConsistencyIndex(enum.Enum):
     item_8 = 1.41
     item_9 = 1.45
     item_10 = 1.49
+
+def custom_404_view(request, exception):
+    return render(request, 'error_404.html')

@@ -20,3 +20,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('ahp/', include('ahp.urls'))
 ]
+
+handler404 = 'ahp.views.custom_404_view'
