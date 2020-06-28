@@ -103,7 +103,7 @@ def criterions_comparison(request, id):
                             c1c2_value = request.POST.get(f'{item1.id}_{item2.id}'),
                         )
                         r.save()
-            comparison_df = _get_criterions_comparison_table(id=id)
+            comparison_df = __get_criterions_comparison_table(id=id)
             context = {
                 'criterions': cnames, 
                 'comparison_df': comparison_df.to_html(
@@ -113,8 +113,8 @@ def criterions_comparison(request, id):
             }
             return render(request, 'criterions_comparison_page.html', context)
         elif 'check' in request.POST:
-            comparison_df = _get_criterions_comparison_table(id=id)
-            consistency_mark, df = _get_consistency_mark(comparison_table=comparison_df)
+            comparison_df = __get_criterions_comparison_table(id=id)
+            consistency_mark, df = __get_consistency_mark(comparison_table=comparison_df)
             context = { 
                 'comparison_df': df.to_html(
                     classes=['table', 'table-striped', 'table-bordered', 'text-center'],
@@ -141,6 +141,10 @@ def alternatives_comparison(request, id):
     criterions = models.CriterionsNames.objects.raw(
         f'SELECT * from ahp_criterionsnames where fk_id={id}',
     )
+    analysis_info_table = __get_analysis_info(id=id)
+    analysis_info_table = analysis_info_table.to_html(
+        classes=['table', 'table-striped', 'table-bordered', 'text-center'],
+    )
 
     df_dict = {}
     consistency_marks = {}
@@ -162,7 +166,7 @@ def alternatives_comparison(request, id):
                                 a1a2_value = request.POST.get(f'{c.id}_{item1.id}_{item2.id}'),
                             )
                             r.save()
-                df = _get_alternatives_comparison_table(id=id, c_id=int(c.id))
+                df = __get_alternatives_comparison_table(id=id, c_id=int(c.id))
                 df_dict[c.id] = df.to_html(
                     classes=['table', 'table-striped', 'table-bordered', 'text-center'],
                 )
@@ -178,8 +182,8 @@ def alternatives_comparison(request, id):
         
         elif 'check' in request.POST:
             for c in criterions:
-                df = _get_alternatives_comparison_table(id=id, c_id=int(c.id))
-                consistency_mark, df = _get_consistency_mark(comparison_table=df)
+                df = __get_alternatives_comparison_table(id=id, c_id=int(c.id))
+                consistency_mark, df = __get_consistency_mark(comparison_table=df)
                 df_consistency_dict[c.id] = df.to_html(
                     classes=['table', 'table-striped', 'table-bordered', 'text-center'],
                 )
@@ -211,6 +215,7 @@ def alternatives_comparison(request, id):
             'criterions': criterions,
             'show': False,
             'check': False,
+            'analysis_info': analysis_info_table,
         }
         return render(request, 'alternatives_comparison_page.html', context)
 
@@ -228,7 +233,7 @@ def final_comparison(request, id):
         }
         return render(request, 'final_comparison_page.html', context)
 
-def _get_alternatives_comparison_table(id: int, c_id: int) -> pd.DataFrame:
+def __get_alternatives_comparison_table(id: int, c_id: int) -> pd.DataFrame:
     """
     Метод для формирования датафрейма со сравнением альтернатив по определенному критерию
     """
@@ -268,7 +273,47 @@ def _get_alternatives_comparison_table(id: int, c_id: int) -> pd.DataFrame:
     df = df.set_index([pd.Index(anames)])
     return df
 
-def _get_criterions_comparison_table(id: int) -> pd.DataFrame:
+def __get_analysis_info(id: int) -> pd.DataFrame:
+    """
+    Метод для получения информации о значениях критериев по альтернативам
+    """
+    criterions = models.CriterionsNames.objects.raw(
+        f'SELECT * from ahp_criterionsnames where fk_id={id}',
+    )
+    alternatives = models.AlternativesNames.objects.raw(
+        f'SELECT * from ahp_alternativesnames where fk_id={id}',
+    )
+
+    values = models.AlternativesCriterionsInfo.objects.raw(
+        f'SELECT * from ahp_alternativescriterionsinfo where fk_id={id}'
+    )
+    values = [v for v in values]
+    values = {
+        f'{a_id}_{c_id}': v for a_id, c_id, v in zip(
+            [i.a_id for i in values],
+            [i.c_id for i in values],
+            [i.value for i in values],
+        )
+    }
+
+    cnames = [c.cname for c in criterions]
+    anames = [a.aname for a in alternatives]
+    df = pd.DataFrame(columns=cnames)
+
+    for a in alternatives:
+        row = []
+        for c in criterions:
+            val = values.get(f'{a.id}_{c.id}')
+            row.append(val)
+        df = df.append(pd.DataFrame([row], columns=cnames), ignore_index=True)
+
+    df = df.set_index([pd.Index(anames)])
+    return df
+
+
+
+
+def __get_criterions_comparison_table(id: int) -> pd.DataFrame:
     """
     Метод для формирования датафрейма со сравнением критериев
     """
@@ -309,7 +354,10 @@ def _get_criterions_comparison_table(id: int) -> pd.DataFrame:
 
     return df
 
-def _get_consistency_mark(comparison_table: pd.DataFrame) -> Tuple[float, pd.DataFrame]:
+def __get_consistency_mark(comparison_table: pd.DataFrame) -> Tuple[float, pd.DataFrame]:
+    """
+    Метод для получения показателя согласованности
+    """
     df = copy.deepcopy(comparison_table)
     items_cols_num = len(df.columns)
     items_names = [col for col in df.columns]
@@ -332,21 +380,24 @@ def _get_consistency_mark(comparison_table: pd.DataFrame) -> Tuple[float, pd.Dat
 
     return consistency_mark, df
 
-def __get_global_priority_value(id: int):
+def __get_global_priority_value(id: int) -> dict:
+    """
+    Метод для подведения итогов посредством расчета глобального критерия
+    """
     result = {}
 
     criterions = models.CriterionsNames.objects.raw(
         f'SELECT * from ahp_criterionsnames where fk_id={id}',
     )
-    c_df = _get_criterions_comparison_table(id=id)
-    _, c_df = _get_consistency_mark(comparison_table=c_df)
+    c_df = __get_criterions_comparison_table(id=id)
+    _, c_df = __get_consistency_mark(comparison_table=c_df)
     norm_c_df = c_df['Нормализованные оценки'].iloc[:-1]
     # indexes - criterions
 
     df = pd.DataFrame()
     for c in criterions:
-        a_df = _get_alternatives_comparison_table(id=id, c_id=int(c.id))
-        _, a_df = _get_consistency_mark(comparison_table=a_df)
+        a_df = __get_alternatives_comparison_table(id=id, c_id=int(c.id))
+        _, a_df = __get_consistency_mark(comparison_table=a_df)
         norm_df = a_df['Нормализованные оценки'].iloc[:-1]
         # indexes - alternatives
         df[c.cname] = norm_df
@@ -361,7 +412,10 @@ def __get_global_priority_value(id: int):
     return {k: v for k, v in sorted(result.items(), key=lambda item: item[1])}
 
 
-def __component_evaluation(data: pd.DataFrame):
+def __component_evaluation(data: pd.DataFrame) -> pd.Series:
+    """
+    Оценка компонент
+    """
     df = copy.deepcopy(data)
     mult = 1
     for col in df.columns:
@@ -375,6 +429,9 @@ def __normalized_evaluation(
     data: pd.DataFrame, 
     component_eval_col: str = 'component_eval',
 ) -> pd.DataFrame:
+    """
+    Нормализованная оценка
+    """
     df = copy.deepcopy(data)
     normalized_eval = df[component_eval_col].iloc[:-1] / df[component_eval_col].iloc[[-1]].values[0]
     normalized_eval = normalized_eval.append(pd.Series(normalized_eval.sum()), ignore_index=True)
@@ -386,6 +443,9 @@ def __consistency_mark(
     normalized_eval_col: str = 'normalized_eval', 
     items_num: int,
 ) -> float:
+    """
+    Показатель согласованности
+    """
     df = copy.deepcopy(data)
 
     L = sum([v1*v2 for v1, v2 in zip(df.iloc[-1, :-2],df[normalized_eval_col].iloc[:-1])])

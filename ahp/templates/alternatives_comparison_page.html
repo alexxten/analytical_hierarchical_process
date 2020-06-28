@@ -56,6 +56,10 @@
             </form>
             
         {% else %}
+            <div class="add-border">
+                <h3>Значения альтернатив по критериям</h3>
+            </div>
+            <br>{{ analysis_info|safe}}<br>
             <form method="post">
                 {% csrf_token %}
                 {% for criterion in criterions %}
