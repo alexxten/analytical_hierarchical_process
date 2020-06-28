@@ -21,4 +21,5 @@ urlpatterns = [
     path('ahp/', include('ahp.urls'))
 ]
 
-handler404 = 'ahp.views.custom_404_view'
+handler404 = 'ahp.views.handler404'
+handler500 = 'ahp.views.handler500'

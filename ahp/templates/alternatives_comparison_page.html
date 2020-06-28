@@ -32,18 +32,27 @@
                 <br><h3>Сравнение по критерию {{ criterion.cname }}</h3><br>
                 {{ df_consistency_dict|get_item:criterion.id|safe }}
                 <br>
-                {% if consistency_marks|get_item:criterion.id %}
-                    <p>OK</p>
+                {% if consistency_marks|get_item:criterion.id < 1%}
+                    <div class="add-border alert alert-success">
+                        <p>Показатель согласованности меньше 1, можно продолжать анализ</p>
+                        <p>{{ consistency_marks|get_item:criterion.id }}</p>
+                    </div>
                 {% else %}
-                    <p>Нихера не ок</p>
+                    <div class="add-border alert alert-danger" role="alert">
+                        <p>Показатель согласованности больше или равен 1</p>
+                        <p>{{ consistency_marks|get_item:criterion.id }}</p>
+                    </div>
                 {% endif %}
-                {{ consistency_marks| get_item:criterion.id| safe }}
                 <br>
             {% endfor %}
             <br>
             <form method="post">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-success btn-lg" name="next">Подсчет итогов</button>
+                {% if show_summary_btn %}
+                    <button type="submit" class="btn btn-success btn-lg" name="next">Подсчет итогов</button>
+                {% else %}
+                    <button type="submit" class="btn btn-secondary btn-lg" name="main">На главную</button>
+                {% endif %}
             </form>
             
         {% else %}
@@ -74,6 +83,7 @@
                         {% endfor %}
                     </table>
                 {% endfor %} 
+                <br>    
                 <button type="submit" class="btn btn-success btn-lg" name="show">Рассчитать</button>
             </form>
         {% endif %}   

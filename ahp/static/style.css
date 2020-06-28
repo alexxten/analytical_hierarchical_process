@@ -8,13 +8,13 @@ body {
 }
 
 h1 { 
-    color: #ffffff; 
-    font-family: 'Lucida Sans', Arial, sans-serif;
-    font-size: 54px; 
-    font-weight: bold;
-    font-weight: 250; 
-    line-height: 150%; 
-    margin: 0 0 58px; 
+  color: #ffffff; 
+  font-family: 'Lucida Sans', Arial, sans-serif;
+  font-size: 54px; 
+  font-weight: bold;
+  font-weight: 250; 
+  line-height: 150%; 
+  margin: 0 0 58px; 
 }
 
 .header {
@@ -31,15 +31,15 @@ div .add-border {
 
 /* SELECT */
 select {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    -ms-appearance: none;
-    appearance: none;
-    outline: 0;
-    box-shadow: none;
-    border: 0 !important;
-    background: #44506A;
-    background-image: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  appearance: none;
+  outline: 0;
+  box-shadow: none;
+  border: 0 !important;
+  background: #44506A;
+  background-image: none;
 }
 /* Remove IE arrow */
 select::-ms-expand {
@@ -81,6 +81,7 @@ select {
 th {
     background-color: #44506A;
     color: #FFFFFF;
+    text-align: center;
 } 
 
 /* ERROR 404 */

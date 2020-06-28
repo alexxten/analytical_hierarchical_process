@@ -106,7 +106,9 @@ def criterions_comparison(request, id):
             comparison_df = _get_criterions_comparison_table(id=id)
             context = {
                 'criterions': cnames, 
-                'comparison_df': comparison_df.to_html(),
+                'comparison_df': comparison_df.to_html(
+                    classes=['table', 'table-striped', 'table-bordered', 'text-center'],
+                ),
                 'show': True,
             }
             return render(request, 'criterions_comparison_page.html', context)
@@ -114,11 +116,15 @@ def criterions_comparison(request, id):
             comparison_df = _get_criterions_comparison_table(id=id)
             consistency_mark, df = _get_consistency_mark(comparison_table=comparison_df)
             context = { 
-                'comparison_df': df.to_html(),
+                'comparison_df': df.to_html(
+                    classes=['table', 'table-striped', 'table-bordered', 'text-center'],
+                ),
                 'consistency_mark': consistency_mark,
                 'check': True,
             }
             return render(request, 'criterions_comparison_page.html', context)
+        elif 'main' in request.POST:
+            return redirect(home)
         else:
             return redirect(alternatives_comparison, id=id)
     else:
@@ -157,7 +163,9 @@ def alternatives_comparison(request, id):
                             )
                             r.save()
                 df = _get_alternatives_comparison_table(id=id, c_id=int(c.id))
-                df_dict[c.id] = df.to_html()
+                df_dict[c.id] = df.to_html(
+                    classes=['table', 'table-striped', 'table-bordered', 'text-center'],
+                )
 
             context = {
                 'alternatives': alternatives, 
@@ -172,8 +180,13 @@ def alternatives_comparison(request, id):
             for c in criterions:
                 df = _get_alternatives_comparison_table(id=id, c_id=int(c.id))
                 consistency_mark, df = _get_consistency_mark(comparison_table=df)
-                df_consistency_dict[c.id] = df.to_html()
+                df_consistency_dict[c.id] = df.to_html(
+                    classes=['table', 'table-striped', 'table-bordered', 'text-center'],
+                )
                 consistency_marks[c.id] = consistency_mark
+            
+            show_summary_btn = [i < 1 for i in consistency_marks.values()]
+            show_summary_btn = False if False in show_summary_btn else True
 
             context = {
                 'alternatives': alternatives, 
@@ -182,8 +195,12 @@ def alternatives_comparison(request, id):
                 'df_consistency_dict': df_consistency_dict,
                 'check': True,
                 'consistency_marks': consistency_marks,
+                'show_summary_btn': show_summary_btn,
             }
             return render(request, 'alternatives_comparison_page.html', context)
+
+        elif 'main' in request.POST:
+            return redirect(home)
 
         else:
             return redirect(final_comparison, id=id)
@@ -380,7 +397,7 @@ def __consistency_mark(
 class RandomConsistencyIndex(enum.Enum):
     item_1 = 0
     item_2 = 0
-    # TODO division by zero?
+    # TODO how to handle division by zero
     item_3 = 0.58
     item_4 = 0.9
     item_5 = 1.12
@@ -390,5 +407,8 @@ class RandomConsistencyIndex(enum.Enum):
     item_9 = 1.45
     item_10 = 1.49
 
-def custom_404_view(request, exception):
+def handler404(request, exception):
     return render(request, 'error_404.html')
+
+def handler500(request):
+    return render(request, 'error_500.html')
